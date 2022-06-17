@@ -1,20 +1,23 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import HomeStack from './pages/Home';
+import MemberStack from './pages/Member';
+import ScheduleStack from './pages/Schedule';
+import SettingStack from './pages/Setting';
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+const Tab = createBottomTabNavigator();
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default () => (
+  <>
+    <StatusBar style='auto' />
+    <NavigationContainer>
+      <Tab.Navigator>
+        <Tab.Screen name="Home" component={HomeStack} options={{ title: 'Home' }} />
+        <Tab.Screen name="Member" component={MemberStack} options={{ title: 'Member' }} />
+        <Tab.Screen name="Schedule" component={ScheduleStack} options={{ title: 'Schedule' }} />
+        <Tab.Screen name="Setting" component={SettingStack} options={{ title: 'Setting' }} />
+      </Tab.Navigator>
+    </NavigationContainer>
+  </>
+);
