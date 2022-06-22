@@ -8,12 +8,19 @@ import MemberStack from './pages/Member';
 import ScheduleStack from './pages/Schedule';
 import SettingStack from './pages/Setting';
 import { AntDesign } from '@expo/vector-icons';
+import { useRef, useState } from 'react';
 
 const Tab = createBottomTabNavigator();
 
 export default () => {
   const isLogin = useStore(x => x?.isLogin);
-  
+  const screenList = useRef([
+    { id: 1, name: 'Home', iconName: 'linechart', component: HomeStack },
+    { id: 2, name: 'Member', iconName: 'user', component: MemberStack },
+    { id: 3, name: 'Schedule', iconName: 'calendar', component: ScheduleStack },
+    { id: 4, name: 'Setting', iconName: 'setting', component: SettingStack },
+  ]);
+
   return (
     <>
       <StatusBar style='auto' />
@@ -22,18 +29,18 @@ export default () => {
       ) : (
         <NavigationContainer>
           <Tab.Navigator>
-            <Tab.Screen name="Home" component={HomeStack} options={{ tabBarShowLabel: false, title: 'Home', tabBarIcon: ({ focused }) => (
-              <AntDesign name="linechart" size={focused ? 26 : 24} style={{ color: focused ? '#1b8e5f' : '#ddd' }} />
-            ) }} />
-            <Tab.Screen name="Member" component={MemberStack} options={{ tabBarShowLabel: false, title: 'Member', tabBarIcon: ({ focused }) => (
-              <AntDesign name="user" size={focused ? 26 : 24} style={{ color: focused ? '#1b8e5f' : '#ddd' }} />
-            ) }} />
-            <Tab.Screen name="Schedule" component={ScheduleStack} options={{ tabBarShowLabel: false, title: 'Schedule', tabBarIcon: ({ focused }) => (
-              <AntDesign name="calendar" size={focused ? 26 : 24} style={{ color: focused ? '#1b8e5f' : '#ddd' }} />
-            ) }} />
-            <Tab.Screen name="Setting" component={SettingStack} options={{ tabBarShowLabel: false, title: 'Setting', tabBarIcon: ({ focused }) => (
-              <AntDesign name="setting" size={focused ? 26 : 24} style={{ color: focused ? '#1b8e5f' : '#ddd' }} />
-            ) }} />
+            {screenList.current?.map(item => (
+              <Tab.Screen key={item?.id} name={item?.name} component={item?.component} options={{
+                tabBarShowLabel: false, title: item?.name,
+                tabBarIcon: ({ focused }) => (
+                  <AntDesign 
+                    name={item?.iconName} 
+                    size={focused ? 26 : 24} 
+                    style={{ color: focused ? '#1b8e5f' : '#ddd' }}
+                  />
+                )
+              }}/>
+            ))}
           </Tab.Navigator>
         </NavigationContainer>
       )}

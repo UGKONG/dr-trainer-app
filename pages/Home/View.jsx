@@ -7,7 +7,7 @@ export default () => {
 
   return (
     <SafeAreaView>
-      <Text>Home View</Text>
+      <Text>대시보드</Text>
       <Text>로그인 강사 ID : {isLogin?.id}</Text>
     </SafeAreaView>
   )
