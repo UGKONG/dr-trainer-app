@@ -1,8 +1,10 @@
 import create from "zustand";
 
 const store = create(set => ({
+  programName: '닥터케어유니온',
   temp: null,
-  isLogin: null,
+  // isLogin: null,
+  isLogin: { USER_SQ: 82 },
   setState: (type, payload) => set(state => {
     if (!type) return console.warn('type is not found!!');
     if (typeof(type) !== 'string') return console.warn('type is not string!!');

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -8,15 +9,14 @@ import MemberStack from './pages/Member';
 import ScheduleStack from './pages/Schedule';
 import SettingStack from './pages/Setting';
 import { AntDesign } from '@expo/vector-icons';
-import { useRef, useState } from 'react';
 
 const Tab = createBottomTabNavigator();
 
 export default () => {
   const isLogin = useStore(x => x?.isLogin);
   const screenList = useRef([
-    { id: 1, name: 'Home', iconName: 'linechart', component: HomeStack },
     { id: 2, name: 'Member', iconName: 'user', component: MemberStack },
+    { id: 1, name: 'Home', iconName: 'linechart', component: HomeStack },
     { id: 3, name: 'Schedule', iconName: 'calendar', component: ScheduleStack },
     { id: 4, name: 'Setting', iconName: 'setting', component: SettingStack },
   ]);
@@ -28,10 +28,10 @@ export default () => {
         <Login />
       ) : (
         <NavigationContainer>
-          <Tab.Navigator>
+          <Tab.Navigator screenOptions={{ headerShown: false }}>
             {screenList.current?.map(item => (
               <Tab.Screen key={item?.id} name={item?.name} component={item?.component} options={{
-                tabBarShowLabel: false, title: item?.name,
+                tabBarShowLabel: false,
                 tabBarIcon: ({ focused }) => (
                   <AntDesign 
                     name={item?.iconName} 

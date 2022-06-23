@@ -33,8 +33,7 @@ export default () => {
       if (!result) return alert('일치하는 강사가 없습니다.');
       let userId = data?.split('$USER_SQ = ')[1]?.split(';')[0];
       dispatch('isLogin', { id: userId });
-    }).catch(() => alert('서버와 연결을 실패했습니다.'));
-
+    }).catch(() => alert('서버의 상태가 원활하지 않습니다.'));
   }
 
   // Development Login
