@@ -46,5 +46,5 @@ const CloseBtn = Styled.TouchableOpacity`
   align-items: center;
 `
 const Contents = Styled.ScrollView`
-  padding: 20px;
+  padding: 0 20px 20px;
 `

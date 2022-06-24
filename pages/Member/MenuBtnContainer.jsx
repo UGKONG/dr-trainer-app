@@ -3,6 +3,9 @@ import { ScrollView, View, Text, Modal } from "react-native";
 import Styled from "styled-components/native";
 import { AntDesign } from '@expo/vector-icons';
 import BaseModal from "./BaseModal";
+import InfoModal from './InfoModal';
+import VoucherModal from './VoucherModal';
+import HistoryModal from './HistoryModal';
 
 export default ({ data }) => {
   const [isInfoModalOpen, setIsInfoModal] = useState(false);
@@ -10,9 +13,9 @@ export default ({ data }) => {
   const [isHistoryModalOpen, setIsHistoryModal] = useState(false);
 
   const btns = [
-    { id: 1, name: '회원정보', state: isInfoModalOpen, setState: setIsInfoModal, component: <Text>회원정보</Text> },
-    { id: 2, name: '이용권', state: isVoucherModalOpen, setState: setIsVoucherModal, component: <Text>이용권</Text> },
-    { id: 3, name: '히스토리', state: isHistoryModalOpen, setState: setIsHistoryModal, component: <Text>히스토리</Text> },
+    { id: 1, name: '회원정보', state: isInfoModalOpen, setState: setIsInfoModal, component: <InfoModal data={data?.info} /> },
+    { id: 2, name: '이용권', state: isVoucherModalOpen, setState: setIsVoucherModal, component: <VoucherModal data={data?.voucher} /> },
+    { id: 3, name: '히스토리', state: isHistoryModalOpen, setState: setIsHistoryModal, component: <HistoryModal data={data?.info?.USER_SQ} /> },
   ];
 
   return (
