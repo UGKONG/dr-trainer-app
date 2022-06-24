@@ -3,11 +3,15 @@ import { View, Text, TouchableOpacity } from "react-native";
 import Styled from 'styled-components/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
+import VoucherHistoryModal from "./BaseModal";
+import VoucherHistoryModalContents from "./VoucherHistoryModal";
 
 export default ({ data }) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  const [modalName, setModalName] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const statusNameList = useRef(['이용전', '이용중', '만료', '이용정지', '오류']);
+
   const statusName = statusNameList.current[Number(data?.USE_STATUS || 5) - 1];
   const type = Number(data?.VOUCHER_TYPE);
   const name = data?.VOUCHER_NAME;
@@ -40,8 +44,19 @@ export default ({ data }) => {
     return result;
   }, [startDate, endDate, totalCount, useCount]);
 
+  const OptionBtnList = useMemo(() => ([
+    { id: 1, name: '사용' },
+    { id: 2, name: '결제' },
+    { id: 3, name: '정지' },
+  ]), []);
+
+  const optionBtnClick = name => {
+    setIsModalOpen(true);
+    setModalName(name);
+  }
+
   return (
-    <Container onPress={() => setIsOpen(!isOpen)}>
+    <Container>
       <Header>
       <Name>
         <TypeIcon name={type === 1 ? 'user-alt' : 'users'} />{' '}{name || '-'}
@@ -78,43 +93,39 @@ export default ({ data }) => {
           </ProgressContent>
         </ProgressRow>
       </Body>
+      <OptionOpenBtn onPress={() => setIsOpen(!isOpen)}>
+        <OptionOpenBtnText>
+          <OptionOpenBtnIcon name='book' /> 히스토리 {isOpen ? '닫기 ' : '열기 '} 
+          <OptionOpenBtnIcon name={isOpen ? 'up' : 'down'} size={12} />
+        </OptionOpenBtnText>
+      </OptionOpenBtn>
+      {isOpen && <OptionBtnContainer>
+        {OptionBtnList?.map(item => (
+          <OptionBtn key={item?.id} onPress={() => optionBtnClick(item?.name)}>
+            <OptionBtnText>{item?.name}</OptionBtnText>
+          </OptionBtn>
+        ))}
+      </OptionBtnContainer>}
 
-      {isOpen && (
-        <OptionBtnContainer>
-          <OptionBtn onPress={() => ''}>
-            <OptionBtnText><OptionBtnIcon name='calendar' /> 기간 횟수 조정</OptionBtnText>
-          </OptionBtn>
-          <OptionBtn onPress={() => ''}>
-            <OptionBtnText><OptionBtnIcon name='user' /> 강사 변경</OptionBtnText>
-          </OptionBtn>
-          <OptionBtn onPress={() => ''}>
-            <OptionBtnText><OptionBtnIcon name='book' /> 히스토리</OptionBtnText>
-          </OptionBtn>
-          <OptionBtn onPress={() => ''}>
-            <OptionBtnText><OptionBtnIcon name='pause' /> 이용권 정지</OptionBtnText>
-          </OptionBtn>
-          <OptionBtn onPress={() => ''}>
-            <OptionBtnText><OptionBtnIcon name='close' /> 이용권 삭제</OptionBtnText>
-          </OptionBtn>
-          <OptionBtn onPress={() => setIsOpen(false)}>
-            <OptionBtnText><OptionBtnIcon name='back' /> 닫 기</OptionBtnText>
-          </OptionBtn>
-        </OptionBtnContainer>
-      )}
+      {/* 이용권 히스토리 모달 */}
+      <VoucherHistoryModal data={{
+        name: modalName,
+        state: isModalOpen,
+        setState: setIsModalOpen,
+        component: <VoucherHistoryModalContents />
+      }} />
     </Container>
   )
 }
 
-const Container = Styled.TouchableOpacity.attrs(
-  () => ({ activeOpacity: 0.8 })
-)`
+const Container = Styled.View`
   display: flex;
   position: relative;
   width: 100%;
   margin-bottom: 10px;
   border-radius: 8px;
   background-color: #1b8e5f;
-  cursor: pointer;
+  overflow: hidden;
 `
 const Header = Styled.View`
   flex-direction: row;
@@ -175,7 +186,7 @@ const ProgressBar = Styled.View`
   background-image: linear-gradient(to right, #97bc62bb, #ee91a2bb);
   background-color: #97bc62;
   width: ${x => x.percent ?? 0}%;
-  height: 14px;
+  height: 10px;
   border-radius: 100px;
 `
 const ProgressContent = Styled.View`
@@ -189,39 +200,40 @@ const ProgressResult = Styled(RowContent)`
 const TotalCountText = Styled.Text`
   color: #ffffff60;
 `
-const OptionBtnContainer = Styled.View`
-  position: absolute;
-  top: 0;
-  left: 0;
+const OptionOpenBtn = Styled.TouchableOpacity.attrs(
+  () => ({ activeOpacity: 0.5 })
+)`
+  padding: 14px 0 20px;
   width: 100%;
-  height: 100%;
-  background-color: #ffffff90;
-  padding: 20px 15px;
-  flex-wrap: wrap;
-  flex-direction: row;
-  align-content: flex-start;
-  align-items: flex-start;
-  justify-content: flex-start;
-`
-const OptionBtn = Styled.TouchableOpacity.attrs(
-  () => ({ activeOpacity: 0.9 })
-)`
-  padding: 10px;
-  margin: 0 5px 10px
-  background-color: #1b8e5f;
-  border-radius: 8px;
-  flex: 1;
-  max-width: 50%;
-  min-width: 40%;
-  min-height: 40px;
+  min-height: 50px;
+  max-height: 50px;
   justify-content: center;
+  align-items: center;
 `
-const OptionBtnIcon = Styled(AntDesign).attrs(
-  ({ name }) => ({ name: name, size: 16, color:'#fff' })
+const OptionOpenBtnIcon = Styled(AntDesign).attrs(
+  ({ name, size }) => ({ name: name, size: size ?? 14, color:'#fff' })
 )`
-  margin-right: 4px;
+  margin: 0 4px;
 `
-const OptionBtnText = Styled.Text`
+const OptionOpenBtnText = Styled.Text`
   color: #fff;
   font-size: 13px;
+`
+const OptionBtnContainer = Styled.View`
+  flex-direction: row;
+  padding: 10px 5px;
+`
+const OptionBtn = Styled.TouchableOpacity.attrs(
+  () => ({ activeOpacity: 0.8 })
+)`
+  flex: 1;
+  margin: 0 5px;
+  align-items: center;
+  padding: 10px 0;
+  background-color: #29ac75;
+  border-radius: 4px;
+`
+const OptionBtnText = Styled.Text`
+  font-size: 12px;
+  color: #fff;
 `
