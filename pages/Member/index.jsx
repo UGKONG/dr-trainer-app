@@ -1,7 +1,7 @@
 import React from "react";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import ListScreen from "./List";
-import ViewScreen from "./View";
+import ListScreen from "./List/index";
+import ViewScreen from "./View/index";
 
 const Stack = createNativeStackNavigator();
 

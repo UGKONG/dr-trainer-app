@@ -9,7 +9,6 @@ export default () => {
   return (
     <Stack.Navigator>
       <Stack.Screen name="ListScreen" component={ListScreen} options={{ title: '설정' }} />
-      {/* <Stack.Screen name="ViewScreen" component={ViewScreen} options={({ route }) => ({ title: route?.params?.name })} /> */}
     </Stack.Navigator>
   )
 }

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { ScrollView, View, TextInput } from "react-native";
 import Styled from "styled-components/native";
-import useAxios from "../../hooks/useAxios";
-import Li from "./Li";
+import useAxios from "../../../hooks/useAxios";
+import MemberLi from "./MemberLi";
 
 export default ({ navigation }) => {
   const [text, setText] = useState('');
@@ -11,6 +11,7 @@ export default ({ navigation }) => {
   const getList = () => {
     useAxios.get('/flow_controller.php?task=getUserList').then(({ data }) => {
       let _data = JSON.parse(data?.split('|')[0]);
+      _data = _data?.filter(x => x?.VOUCHER_NAME);
       setList(_data);
     }).catch(() => alert('서버의 상태가 원활하지 않습니다.'));
   }
@@ -21,8 +22,7 @@ export default ({ navigation }) => {
     return filter;
   }, [text, list]);
 
-  // useEffect(getList, []);
-  useEffect(() => navigation.navigate('ViewScreen', { name: '홍길동', id: '2002' }), []);
+  useEffect(getList, []);
 
   return (
     <>
@@ -30,7 +30,7 @@ export default ({ navigation }) => {
         <SearchBox value={text} onChangeText={setText} placeholder='회원명 검색' />
       </Option>
       <List>
-        {filterList?.map(item => <Li key={item?.USER_SQ} data={item} navigation={navigation} />)}
+        {filterList?.map(item => <MemberLi key={item?.USER_SQ} data={item} navigation={navigation} />)}
       </List>
     </>
   )

@@ -1,27 +1,32 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useCallback } from "react";
 import { View, Text, TouchableOpacity } from "react-native";
 import Styled from 'styled-components/native';
 import { FontAwesome5 } from '@expo/vector-icons';
 import { AntDesign } from '@expo/vector-icons';
-import VoucherHistoryModal from "./BaseModal";
+import BaseModal from "../../Common/BaseModal";
 import VoucherHistoryModalContents from "./VoucherHistoryModal";
 
-export default ({ data }) => {
+export default ({ data, historyList }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalName, setModalName] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [voucherHistoryList, setVoucherHistoryList] = useState([]);
   const statusNameList = useRef(['이용전', '이용중', '만료', '이용정지', '오류']);
+  const OptionBtnList = useRef([
+    { id: 1, name: '사용', field: 'use' },
+    { id: 2, name: '결제', field: 'pay' },
+    { id: 3, name: '정지', field: 'stop' },
+  ]);
 
-  const statusName = statusNameList.current[Number(data?.USE_STATUS || 5) - 1];
-  const type = Number(data?.VOUCHER_TYPE);
-  const name = data?.VOUCHER_NAME;
-  const teacherName = data?.TRAINER_NM || data?.SELLER_NM;
-  const startDate = data?.USE_STARTDATE.split(' ')[0];
-  const endDate = data?.USE_LASTDATE.split(' ')[0];
-  const reservCount = Number(data?.RESERV_COUNT);
-  const totalCount = Number(data?.COUNT);
-  const useCount = Number(data?.USEDCOUNT);
-
+  const statusName = useMemo(() => statusNameList.current[Number(data?.USE_STATUS || 5) - 1], [data]);
+  const type = useMemo(() => Number(data?.VOUCHER_TYPE), [data]);
+  const name = useMemo(() => data?.VOUCHER_NAME, [data]);
+  const teacherName = useMemo(() => data?.TRAINER_NM || data?.SELLER_NM, [data]);
+  const startDate = useMemo(() => data?.USE_STARTDATE.split(' ')[0], [data]);
+  const endDate = useMemo(() => data?.USE_LASTDATE.split(' ')[0], [data]);
+  const reservCount = useMemo(() => Number(data?.RESERV_COUNT), [data]);
+  const totalCount = useMemo(() => Number(data?.COUNT), [data]);
+  const useCount = useMemo(() => Number(data?.USEDCOUNT), [data]);
   const totalDate = useMemo(() => {
     let result = new Object();
     let now = (new Date()).getTime();
@@ -31,8 +36,7 @@ export default ({ data }) => {
     result.now = Math.floor((now - start) / 1000 / 60 / 60 / 24);
     result.now = result.now < 0 ? 0 : result.now >= result.total ? result.total : result.now;
     return result;
-  }, [startDate, endDate]);
-
+  }, [data]);
   const percent = useMemo(() => {
     let result = new Object();
     result.date = Math.round(totalDate?.now / totalDate?.total * 100);
@@ -42,57 +46,59 @@ export default ({ data }) => {
     result.date = 100 - result.date;
     result.count = 100 - result.count;
     return result;
-  }, [startDate, endDate, totalCount, useCount]);
+  }, [data]);
 
-  const OptionBtnList = useMemo(() => ([
-    { id: 1, name: '사용' },
-    { id: 2, name: '결제' },
-    { id: 3, name: '정지' },
-  ]), []);
-
-  const optionBtnClick = name => {
+  const optionBtnClick = useCallback(item => {
     setIsModalOpen(true);
-    setModalName(name);
-  }
+    setModalName(item?.name);
+    setVoucherHistoryList(historyList[item?.field]);
+  }, [setIsModalOpen, setModalName, setVoucherHistoryList]);
 
-  return (
-    <Container>
-      <Header>
+  const VoucherInfo = useCallback(() => (
+    <>
+    <Header>
       <Name>
         <TypeIcon name={type === 1 ? 'user-alt' : 'users'} />{' '}{name || '-'}
       </Name>
       <Status>
         <StatusText>{statusName || 'statusName'}</StatusText>
       </Status>
-      </Header>
-      <Body>
-        <Row>
-          <RowTitle>기간</RowTitle>
-          <RowContent>{startDate} ~ {endDate}</RowContent>
-        </Row>
-        <Row>
-          <RowTitle>강사</RowTitle>
-          <RowContent>{teacherName}</RowContent>
-        </Row>
-        <Row>
-          <RowTitle>예약</RowTitle>
-          <RowContent>{reservCount} 회</RowContent>
-        </Row>
-        <ProgressRow>
-          <Progress><ProgressBar percent={percent?.date} /></Progress>
-          <ProgressContent>
-            <ProgressResult>잔여기간 {totalDate?.total - totalDate?.now}일</ProgressResult>
-            <TotalCountText>총 {totalDate?.total}일</TotalCountText>
-          </ProgressContent>
-        </ProgressRow>
-        <ProgressRow style={{ marginTop: 10 }}>
-          <Progress><ProgressBar percent={percent?.count} /></Progress>
-          <ProgressContent>
-            <ProgressResult>잔여횟수 {totalCount - useCount}회</ProgressResult>
-            <TotalCountText>총 {totalCount}회</TotalCountText>
-          </ProgressContent>
-        </ProgressRow>
-      </Body>
+    </Header>
+    <Body>
+      <Row>
+        <RowTitle>기간</RowTitle>
+        <RowContent>{startDate} ~ {endDate}</RowContent>
+      </Row>
+      <Row>
+        <RowTitle>강사</RowTitle>
+        <RowContent>{teacherName}</RowContent>
+      </Row>
+      <Row>
+        <RowTitle>예약</RowTitle>
+        <RowContent>{reservCount} 회</RowContent>
+      </Row>
+      <ProgressRow>
+        <Progress><ProgressBar percent={percent?.date} /></Progress>
+        <ProgressContent>
+          <ProgressResult>잔여기간 {totalDate?.total - totalDate?.now}일</ProgressResult>
+          <TotalCountText>총 {totalDate?.total}일</TotalCountText>
+        </ProgressContent>
+      </ProgressRow>
+      <ProgressRow style={{ marginTop: 10 }}>
+        <Progress><ProgressBar percent={percent?.count} /></Progress>
+        <ProgressContent>
+          <ProgressResult>잔여횟수 {totalCount - useCount}회</ProgressResult>
+          <TotalCountText>총 {totalCount}회</TotalCountText>
+        </ProgressContent>
+      </ProgressRow>
+    </Body>
+    </>
+  ), [data]);
+
+
+  return (
+    <Container>
+      <VoucherInfo />
       <OptionOpenBtn onPress={() => setIsOpen(!isOpen)}>
         <OptionOpenBtnText>
           <OptionOpenBtnIcon name='book' /> 히스토리 {isOpen ? '닫기 ' : '열기 '} 
@@ -100,19 +106,19 @@ export default ({ data }) => {
         </OptionOpenBtnText>
       </OptionOpenBtn>
       {isOpen && <OptionBtnContainer>
-        {OptionBtnList?.map(item => (
-          <OptionBtn key={item?.id} onPress={() => optionBtnClick(item?.name)}>
+        {OptionBtnList?.current?.map(item => (
+          <OptionBtn key={item?.id} onPress={() => optionBtnClick(item)}>
             <OptionBtnText>{item?.name}</OptionBtnText>
           </OptionBtn>
         ))}
       </OptionBtnContainer>}
 
       {/* 이용권 히스토리 모달 */}
-      <VoucherHistoryModal data={{
+      <BaseModal data={{
         name: modalName,
         state: isModalOpen,
         setState: setIsModalOpen,
-        component: <VoucherHistoryModalContents />
+        component: <VoucherHistoryModalContents list={voucherHistoryList} />
       }} />
     </Container>
   )

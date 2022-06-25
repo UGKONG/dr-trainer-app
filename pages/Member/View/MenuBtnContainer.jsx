@@ -1,8 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { ScrollView, View, Text, Modal } from "react-native";
 import Styled from "styled-components/native";
-import { AntDesign } from '@expo/vector-icons';
-import BaseModal from "./BaseModal";
+import BaseModal from "../../Common/BaseModal";
 import InfoModal from './InfoModal';
 import VoucherModal from './VoucherModal';
 import HistoryModal from './HistoryModal';
@@ -11,12 +10,18 @@ export default ({ data }) => {
   const [isInfoModalOpen, setIsInfoModal] = useState(false);
   const [isVoucherModalOpen, setIsVoucherModal] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModal] = useState(false);
-
-  const btns = [
+  
+  const voucherHistoryList = useMemo(() => ({
+    payHistory: data?.voucherPayHistory,
+    useHistory: data?.voucherUseHistory,
+    stopHistory: data?.voucherStopHistory,
+  }), [data]);
+  
+  const btns = useMemo(() => ([
     { id: 1, name: '회원정보', state: isInfoModalOpen, setState: setIsInfoModal, component: <InfoModal data={data?.info} /> },
-    { id: 2, name: '이용권', state: isVoucherModalOpen, setState: setIsVoucherModal, component: <VoucherModal data={data?.voucher} /> },
-    { id: 3, name: '히스토리', state: isHistoryModalOpen, setState: setIsHistoryModal, component: <HistoryModal data={data?.info?.USER_SQ} /> },
-  ];
+    { id: 2, name: '이용권', state: isVoucherModalOpen, setState: setIsVoucherModal, component: <VoucherModal data={data?.voucher} voucherHistoryList={voucherHistoryList} /> },
+    { id: 3, name: '히스토리', state: isHistoryModalOpen, setState: setIsHistoryModal, component: <HistoryModal data={data?.info?.USER_SQ} /> },   
+  ]), [data, isInfoModalOpen, isVoucherModalOpen, isHistoryModalOpen]);
 
   return (
     <Container>

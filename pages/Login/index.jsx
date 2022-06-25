@@ -24,20 +24,25 @@ export default () => {
 
   const signin = (id, pw) => {
     let form = new FormData();
-    form.append('uID', id ?? idValue);
-    form.append('uPW', pw ?? pwValue);
-    form.append('os', os);
-    form.append('pwd_encrypted', sha256(pw ?? pwValue));
-    useAxios.post('/flow_controller.php?task=staff_login', form).then(({ data }) => {
+        form.append('uID', id ?? idValue);
+        form.append('uPW', pw ?? pwValue);
+        form.append('os', os);
+        form.append('pwd_encrypted', sha256(pw ?? pwValue));
+
+    useAxios.post('flow_controller.php?task=staff_login', form).then(({ data }) => {
+      if (!data || data?.result === 'Fail') return alert('서버의 상태가 원활하지 않습니다.');
       let result = data?.indexOf('$USER_SQ = ') > -1;
       if (!result) return alert('일치하는 강사가 없습니다.');
       let userId = data?.split('$USER_SQ = ')[1]?.split(';')[0];
       dispatch('isLogin', { id: userId });
-    }).catch(() => alert('서버의 상태가 원활하지 않습니다.'));
+    }).catch(err => {
+      alert('서버의 상태가 원활하지 않습니다.');
+      // console.log(err);
+    });
   }
 
   // Development Login
-  useEffect(() => signin('admin', '0915'));
+  // useEffect(() => signin('admin', '0915'), []);
 
   return (
     <Container>

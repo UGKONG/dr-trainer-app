@@ -16,8 +16,8 @@ const Tab = createBottomTabNavigator();
 export default () => {
   const isLogin = useStore(x => x?.isLogin);
   const screenList = useRef([
-    { id: 2, name: 'Member', iconName: 'user', component: MemberStack },
     { id: 1, name: 'Home', iconName: 'linechart', component: HomeStack },
+    { id: 2, name: 'Member', iconName: 'user', component: MemberStack },
     { id: 3, name: 'Schedule', iconName: 'calendar', component: ScheduleStack },
     { id: 4, name: 'Notice', iconName: 'bells', component: NoticeStack },
     { id: 5, name: 'Setting', iconName: 'setting', component: SettingStack },

@@ -1,10 +1,10 @@
 import { useMemo, useRef } from "react";
 import Styled from "styled-components/native";
 import { View, Text, Image } from "react-native";
-import useNumber from '../../hooks/useNumber';
-import userImage from '../../assets/user.png';
 import { AntDesign } from '@expo/vector-icons';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import useNumber from '../../../hooks/useNumber';
+import userImage from '../../../assets/user.png';
 
 export default ({ data }) => {
 
@@ -72,7 +72,9 @@ const Container = Styled.View`
   align-items: center;
   margin: 10px;
 `
-const ProfileImage = Styled.Image`
+const ProfileImage = Styled.Image.attrs(
+  ({ source }) => ({ source })
+)`
   width: 120px;
   height: 120px;
   border-radius: 120px;

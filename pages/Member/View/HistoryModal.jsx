@@ -2,8 +2,23 @@ import { useState, useRef, useEffect } from "react";
 import { ScrollView, View, Text, Modal } from "react-native";
 import { AntDesign } from '@expo/vector-icons';
 import Styled from 'styled-components/native';
+import useAxios from "../../../hooks/useAxios";
 
-export default ({ list }) => {
+export default ({ data }) => {
+
+  const [list, setList] = useState([]);
+
+  const getList = () => {
+    useAxios.post('/flow_controller.php?task=GetUserHistoryList', { START_DT: '2000-01-01', END_DT: '3000-01-01', MEMBER_SQ: data }).then(({ data }) => {
+      let _data = data?.split('|')[0];
+      _data = JSON.parse(_data);
+      _data?.sort((a, b) => Number(b?.HIST_SQ) - Number(a?.HIST_SQ));
+      console.log(_data);
+      setList(_data);
+    });
+  }
+
+  useEffect(getList, []);
 
   return (
     <>

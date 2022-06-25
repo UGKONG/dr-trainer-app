@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-  baseURL: 'https://drcareunion.com/admin',
-  timeout: 10000
+  baseURL: 'http://drcareunion.com/admin',
+  timeout: 5000
 });
